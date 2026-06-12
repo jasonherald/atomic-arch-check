@@ -157,27 +157,22 @@ require_arch() {
 }
 
 # Load data/compromised-packages.tsv into the PKG_* arrays.
-# File format (tab-separated): name <TAB> bad_versions(comma-sep or *) <TAB>
-#                              incident <TAB> confidence <TAB> sources
-# Special line "#%window <incident> <start> <end>" records each incident's
-# malicious-commit date window. Other "#" lines and blanks are comments.
+# Tab-separated, with a column-header row:
+#   name <TAB> bad_versions(comma-sep or *) <TAB> incident <TAB> confidence <TAB> sources
+# Malicious-commit date windows live separately in incident-windows.tsv (loaded
+# by load_windows). Blank lines and any leading-# lines are tolerated/skipped.
 load_packages() {
   local file="$DATA_DIR/compromised-packages.tsv"
-  local line name versions incident conf source _tag inc start end
+  local line name versions incident conf source
   if [[ ! -r "$file" ]]; then
     echo "error: cannot read $file (use --data-dir or run from the repo)" >&2
     exit 3
   fi
   # `|| [[ -n "$line" ]]` ensures a final line without a trailing newline is read.
   while IFS= read -r line || [[ -n "$line" ]]; do
-    if [[ "$line" == '#%window '* ]]; then           # window directive, not a package
-      read -r _tag inc start end <<< "$line"          # split on whitespace
-      WINDOW_START["$inc"]="$start"
-      WINDOW_END["$inc"]="$end"
-      continue
-    fi
-    [[ -z "$line" || "$line" == '#'* ]] && continue   # skip blanks and comments
+    [[ -z "$line" || "$line" == '#'* ]] && continue   # tolerate blanks/comments
     IFS=$'\t' read -r name versions incident conf source <<< "$line"   # split on TAB
+    [[ "$name" == "name" && "$versions" == "bad_versions" ]] && continue   # header row
     # A row missing any required column is reported and skipped (the run continues).
     if [[ -z "$name" || -z "${versions:-}" || -z "${incident:-}" ]]; then
       echo "warning: malformed row in compromised-packages.tsv: $line" >&2
@@ -191,7 +186,7 @@ load_packages() {
 }
 
 # Load data/indicators.tsv into the parallel IOC_* arrays.
-# File format (tab-separated): type <TAB> value <TAB> description <TAB> source
+# Tab-separated, with a column-header row: type <TAB> value <TAB> description <TAB> source
 load_indicators() {
   local file="$DATA_DIR/indicators.tsv" line type value desc source
   if [[ ! -r "$file" ]]; then
@@ -199,8 +194,9 @@ load_indicators() {
     exit 3
   fi
   while IFS= read -r line || [[ -n "$line" ]]; do
-    [[ -z "$line" || "$line" == '#'* ]] && continue   # skip blanks and comments
+    [[ -z "$line" || "$line" == '#'* ]] && continue   # tolerate blanks/comments
     IFS=$'\t' read -r type value desc source <<< "$line"
+    [[ "$type" == "type" && "$value" == "value" ]] && continue   # header row
     if [[ -z "$type" || -z "${value:-}" ]]; then       # type and value are required
       echo "warning: malformed row in indicators.tsv: $line" >&2
       continue
@@ -209,6 +205,23 @@ load_indicators() {
     IOC_VALUES+=("$value")
     IOC_DESCS+=("${desc:-}")
     IOC_SOURCES+=("${source:-unattributed}")
+  done < "$file"
+}
+
+# Load data/incident-windows.tsv (header: incident<TAB>window_start<TAB>window_end)
+# into WINDOW_START/WINDOW_END. Supplementary metadata: a missing/unreadable file
+# is NOT fatal — the history layer simply can't apply date-window heuristics for
+# incidents it doesn't have a window for.
+load_windows() {
+  local file="$DATA_DIR/incident-windows.tsv" line inc start end
+  [[ -r "$file" ]] || return 0
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ -z "$line" || "$line" == '#'* ]] && continue
+    IFS=$'\t' read -r inc start end <<< "$line"
+    [[ "$inc" == "incident" && "$start" == "window_start" ]] && continue   # header row
+    [[ -z "$inc" || -z "${start:-}" || -z "${end:-}" ]] && continue
+    WINDOW_START["$inc"]="$start"
+    WINDOW_END["$inc"]="$end"
   done < "$file"
 }
 
@@ -588,6 +601,7 @@ main() {
   require_arch
   load_packages
   load_indicators
+  load_windows        # incident date-windows (from incident-windows.tsv)
   check_installed     # Layer 1: currently installed
   check_history       # Layer 2a: install/build history (incl. rotated logs)
   check_caches        # Layer 2b: AUR-helper build caches

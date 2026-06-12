@@ -235,7 +235,7 @@ def discover_packages(signatures, days, max_events=DEFAULT_MAX_EVENTS):
 
 def read_pkg_names(path):
     """Return the set of package names in a compromised-packages.tsv (col 1,
-    skipping comments). Missing file -> empty set."""
+    skipping the header row and comments). Missing file -> empty set."""
     names = set()
     if not os.path.exists(path):
         return names
@@ -243,7 +243,10 @@ def read_pkg_names(path):
         for line in f:
             if not line.strip() or line.startswith("#"):
                 continue
-            names.add(line.split("\t", 1)[0])
+            first = line.split("\t", 1)[0]
+            if first == "name":   # column-header row
+                continue
+            names.add(first)
     return names
 
 
@@ -270,7 +273,9 @@ def merge_findings(discovered):
 def run_curation():
     """Regenerate data/*.tsv from findings.json via curate-findings.py, passing
     the same path overrides we use so it writes to our (possibly temp) targets."""
-    env = dict(os.environ, ACC_FINDINGS=FINDINGS, ACC_PKG_TSV=PKG_TSV, ACC_IOC_TSV=IOC_TSV)
+    windows_tsv = os.path.join(os.path.dirname(PKG_TSV), "incident-windows.tsv")
+    env = dict(os.environ, ACC_FINDINGS=FINDINGS, ACC_PKG_TSV=PKG_TSV, ACC_IOC_TSV=IOC_TSV,
+               ACC_WINDOWS_TSV=windows_tsv)
     proc = subprocess.run([sys.executable, CURATE], env=env,
                           capture_output=True, text=True)
     if proc.returncode != 0:

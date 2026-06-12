@@ -1,5 +1,4 @@
-# TEST FIXTURE — fake indicators only.
-# Columns: type<TAB>value<TAB>description<TAB>source
+type	value	description	source
 file-path	~/.local/share/.fake-marker	fake dropped-file marker	https://example.test
 npm-package	fake-malicious-npm	fake npm payload	https://example.test
 pkgbuild-pattern	npm install fake-malicious-npm	fake PKGBUILD injection line	https://example.test

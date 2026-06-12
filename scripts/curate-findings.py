@@ -147,10 +147,12 @@ def build_package_rows(data):
         seen.add(r[0]); uniq.append(r)
     return uniq, dropped
 
-def tsv(path, header_lines, rows):
+def write_tsv(path, header, rows):
+    """Write a clean TSV: a real column-header row, then data rows — no comment
+    lines, every row the same width — so GitHub renders it as a uniform,
+    searchable table. Provenance/format notes live in data/README.md, not here."""
     with open(path, "w") as f:
-        for h in header_lines:
-            f.write(h + "\n")
+        f.write("\t".join(header) + "\n")
         for r in rows:
             f.write("\t".join(r) + "\n")
 
@@ -159,29 +161,18 @@ def main():
     pkg_rows, dropped = build_package_rows(data)
     ioc_rows = build_indicator_rows()
 
-    pkg_header = [
-        "# Compromised AUR packages — “Atomic Arch” campaign (June 2026) + related incidents.",
-        "# Compiled 2026-06-12. Provenance, update process, and corrections: see README.md.",
-        "# Columns: name<TAB>bad_versions(comma-sep or *)<TAB>incident<TAB>confidence<TAB>sources(comma-sep)",
-        "# confidence: primary-source (aur-general thread / official Arch) | multi-source | single-source",
-    ] + [f"#%window {inc} {s} {e}" for inc, s, e in WINDOWS]
-
-    ioc_header = [
-        "# Defensive indicators for the “Atomic Arch” AUR compromise (June 2026).",
-        "# Values come ONLY from published analyses; this repo contains no payload content.",
-        "# Curated for HIGH PRECISION: decoy npm pkgs, legit services (openai/slack/github),",
-        "# loopback, randomized systemd unit names, and git-commit SHAs are deliberately excluded.",
-        "# Columns: type<TAB>value<TAB>description<TAB>source",
-        "# types: npm-package | file-path | hash | systemd-unit | process-name | pkgbuild-pattern | domain | ip",
-    ]
-
     out_pkg = os.environ.get("ACC_PKG_TSV", os.path.join(ROOT, "data", "compromised-packages.tsv"))
     out_ioc = os.environ.get("ACC_IOC_TSV", os.path.join(ROOT, "data", "indicators.tsv"))
-    tsv(out_pkg, pkg_header, pkg_rows)
-    tsv(out_ioc, ioc_header, ioc_rows)
+    out_win = os.environ.get("ACC_WINDOWS_TSV", os.path.join(ROOT, "data", "incident-windows.tsv"))
+
+    write_tsv(out_pkg, ["name", "bad_versions", "incident", "confidence", "sources"], pkg_rows)
+    write_tsv(out_ioc, ["type", "value", "description", "source"], ioc_rows)
+    write_tsv(out_win, ["incident", "window_start", "window_end"],
+              [(inc, s, e) for inc, s, e in WINDOWS])
 
     print(f"packages written : {len(pkg_rows)}")
     print(f"indicators written: {len(ioc_rows)}")
+    print(f"windows written  : {len(WINDOWS)}")
     if dropped:
         print(f"dropped non-package-name entries ({len(dropped)}): {dropped}", file=sys.stderr)
 

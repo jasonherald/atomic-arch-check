@@ -331,11 +331,22 @@ test_history_rotated_bz2() {
   assert_contains "evil-pkg"
 }
 
+test_data_uniform_columns() {
+  begin "real data files: uniform column counts (GitHub-renderable table)"
+  local bad=""
+  bad+="$(awk -F'\t' 'NF!=5{print "  compromised-packages.tsv line "NR" has "NF" cols"}' "$ROOT/data/compromised-packages.tsv")"
+  bad+="$(awk -F'\t' 'NF!=4{print "  indicators.tsv line "NR" has "NF" cols"}' "$ROOT/data/indicators.tsv")"
+  bad+="$(awk -F'\t' 'NF!=3{print "  incident-windows.tsv line "NR" has "NF" cols"}' "$ROOT/data/incident-windows.tsv")"
+  if [[ -z "$bad" ]]; then ok "all rows uniform (pkg=5, ioc=4, win=3)"
+  else failed "ragged rows would break GitHub table:$bad"; fi
+}
+
 test_cache_dirs_from_home_roots
 test_domain_blocklist_not_warning
 test_history_rotated_xz
 test_history_rotated_zst
 test_history_rotated_bz2
+test_data_uniform_columns
 
 printf '\n%d passed, %d failed\n' "$PASS" "$FAIL"
 checker_ok=$(( FAIL == 0 ))
