@@ -1,4 +1,4 @@
-# Compromised AUR packages — "Atomic Arch" campaign (June 2026) + related incidents.
+# Compromised AUR packages — “Atomic Arch” campaign (June 2026) + related incidents.
 # Compiled 2026-06-12. Provenance, update process, and corrections: see README.md.
 # Columns: name<TAB>bad_versions(comma-sep or *)<TAB>incident<TAB>confidence<TAB>sources(comma-sep)
 # confidence: primary-source (aur-general thread / official Arch) | multi-source | single-source

@@ -1,4 +1,4 @@
-# Defensive indicators for the "Atomic Arch" AUR compromise (June 2026).
+# Defensive indicators for the “Atomic Arch” AUR compromise (June 2026).
 # Values come ONLY from published analyses; this repo contains no payload content.
 # Curated for HIGH PRECISION: decoy npm pkgs, legit services (openai/slack/github),
 # loopback, randomized systemd unit names, and git-commit SHAs are deliberately excluded.

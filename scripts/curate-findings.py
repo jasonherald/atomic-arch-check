@@ -160,14 +160,14 @@ def main():
     ioc_rows = build_indicator_rows()
 
     pkg_header = [
-        "# Compromised AUR packages — \"Atomic Arch\" campaign (June 2026) + related incidents.",
+        "# Compromised AUR packages — “Atomic Arch” campaign (June 2026) + related incidents.",
         "# Compiled 2026-06-12. Provenance, update process, and corrections: see README.md.",
         "# Columns: name<TAB>bad_versions(comma-sep or *)<TAB>incident<TAB>confidence<TAB>sources(comma-sep)",
         "# confidence: primary-source (aur-general thread / official Arch) | multi-source | single-source",
     ] + [f"#%window {inc} {s} {e}" for inc, s, e in WINDOWS]
 
     ioc_header = [
-        "# Defensive indicators for the \"Atomic Arch\" AUR compromise (June 2026).",
+        "# Defensive indicators for the “Atomic Arch” AUR compromise (June 2026).",
         "# Values come ONLY from published analyses; this repo contains no payload content.",
         "# Curated for HIGH PRECISION: decoy npm pkgs, legit services (openai/slack/github),",
         "# loopback, randomized systemd unit names, and git-commit SHAs are deliberately excluded.",
