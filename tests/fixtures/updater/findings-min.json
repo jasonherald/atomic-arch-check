@@ -1,0 +1,9 @@
+{
+  "campaign": "test",
+  "compiled_on": "2026-06-12",
+  "package_count": 1,
+  "packages": [
+    {"name": "already-known", "bad_versions": [], "incident": "atomic-arch-2026-06", "confidence": "primary-source", "sources": ["aur-general-thread"]}
+  ],
+  "iocs_reference": []
+}

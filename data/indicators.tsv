@@ -1,0 +1,26 @@
+# Defensive indicators for the "Atomic Arch" AUR compromise (June 2026).
+# Values come ONLY from published analyses; this repo contains no payload content.
+# Curated for HIGH PRECISION: decoy npm pkgs, legit services (openai/slack/github),
+# loopback, randomized systemd unit names, and git-commit SHAs are deliberately excluded.
+# Columns: type<TAB>value<TAB>description<TAB>source
+# types: npm-package | file-path | hash | systemd-unit | process-name | pkgbuild-pattern | domain | ip
+npm-package	atomic-lockfile	malicious npm package installed at build time (atomic-lockfile)	sonatype,socket,aur-general-thread
+npm-package	js-digest	malicious npm package installed at build time (js-digest)	sonatype,socket,aur-general-thread
+npm-package	lockfile-js	malicious npm package installed at build time (lockfile-js)	sonatype,socket,aur-general-thread
+file-path	/sys/fs/bpf/hidden_pids	eBPF rootkit pinned map (hides PIDs) — payload artifact	ioctl-analysis,arch-bbs
+file-path	/sys/fs/bpf/hidden_names	eBPF rootkit pinned map (hides filenames) — payload artifact	ioctl-analysis,arch-bbs
+file-path	/sys/fs/bpf/hidden_inodes	eBPF rootkit pinned map (hides socket inodes) — payload artifact	ioctl-analysis,arch-bbs
+file-path	~/.local/bin/sudo	credential-theft sudo shim reported by analysts	ioctl-analysis,arch-bbs
+file-path	/tmp/node_modules/atomic-lockfile	resident wave-1 install (payload runs 'cd /tmp; npm install')	ioctl-analysis,arch-bbs
+file-path	/tmp/node_modules/js-digest	resident wave-2 install (payload runs 'cd /tmp; bun add')	ioctl-analysis,arch-bbs
+file-path	/tmp/node_modules/lockfile-js	resident wave-2 install (payload runs 'cd /tmp; bun add')	ioctl-analysis,arch-bbs
+hash	6144d433f8a0316869877b5f834c801251bbb936e5f1577c5680878c7443c98b:/tmp/node_modules/*/package/src/hooks/deps	'deps' ELF credential-stealer (3,040,376 bytes) in /tmp install	ioctl-analysis
+hash	6144d433f8a0316869877b5f834c801251bbb936e5f1577c5680878c7443c98b:~/node_modules/*/package/src/hooks/deps	'deps' ELF credential-stealer in a home node_modules	ioctl-analysis
+domain	olrh4mibs62l6kkuvvjyc5lrercqg5tz543r4lsw3o6mh5qb7g7sneid.onion	attacker Tor C2 host (manual review: check Tor/proxy/DNS logs)	ioctl-analysis,aur-general-thread
+domain	temp.sh	exfil upload destination used by the payload (manual review)	ioctl-analysis,aur-general-thread
+domain	raw.gitubusercontent.com	typosquat domain posted in-thread (NOT githubusercontent); manual review	ioctl-analysis,aur-general-thread
+pkgbuild-pattern	atomic-lockfile	wave-1 malicious npm package name in a build recipe	aur-general-thread,sonatype
+pkgbuild-pattern	js-digest	wave-2 malicious npm package name in a build recipe	aur-general-thread,sonatype
+pkgbuild-pattern	lockfile-js	wave-2 malicious npm package name in a build recipe	aur-general-thread,sonatype
+pkgbuild-pattern	src/hooks/deps	atomic-lockfile preinstall hook path (executes the ELF)	aur-general-thread,sonatype
+pkgbuild-pattern	lib/install-deps.mjs	js-digest preinstall hook path	aur-general-thread,sonatype

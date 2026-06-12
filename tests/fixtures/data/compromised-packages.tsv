@@ -1,0 +1,5 @@
+# TEST FIXTURE — fake package names only, not real compromised packages.
+# Columns: name<TAB>bad_versions(comma-sep or *)<TAB>incident<TAB>confidence<TAB>sources
+#%window atomic-arch-2026-06 2026-06-09 2026-06-12
+evil-pkg	1.2.3-1	atomic-arch-2026-06	primary-source	https://example.test/thread
+evil-unversioned	*	atomic-arch-2026-06	single-source	https://example.test/blog

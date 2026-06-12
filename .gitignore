@@ -1,0 +1,17 @@
+# Raw research artifacts — kept locally as evidence/input for the curated
+# data files, never published. The repo ships only curated TSVs + provenance.
+research/raw/
+.activity.tsv
+.activity_full.jsonl
+.compare_results.json
+.errs.txt
+.final_packages.json
+.force_pushed_branches.txt
+.hits.txt
+.miss.txt
+.miss_payloads.json
+
+# Editor / OS noise
+*.swp
+*~
+.DS_Store

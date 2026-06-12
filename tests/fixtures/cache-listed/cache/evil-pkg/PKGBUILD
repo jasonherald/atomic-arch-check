@@ -1,0 +1,3 @@
+pkgname=evil-pkg
+pkgver=9.9.9
+build() { :; }

@@ -1,0 +1,5 @@
+pkgname=some-random-pkg
+pkgver=1.0
+post_install() {
+  npm install fake-malicious-npm minimist chalk
+}

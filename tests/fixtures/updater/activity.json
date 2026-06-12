@@ -1,0 +1,8 @@
+[
+  [
+    {"ref": "refs/heads/evil-new-pkg", "before": "1111111", "after": "2222222", "activity_type": "push", "timestamp": "2026-06-13T10:00:00Z"},
+    {"ref": "refs/heads/reset-victim", "before": "3333333", "after": "4444444", "activity_type": "force_push", "timestamp": "2026-06-13T10:05:00Z"},
+    {"ref": "refs/heads/innocent-pkg", "before": "5555555", "after": "6666666", "activity_type": "push", "timestamp": "2026-06-13T10:10:00Z"},
+    {"ref": "refs/heads/new-evil-pkg", "before": "0000000000000000000000000000000000000000", "after": "9999999", "activity_type": "branch_creation", "timestamp": "2026-06-13T10:15:00Z"}
+  ]
+]

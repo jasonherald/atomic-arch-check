@@ -1,0 +1,9 @@
+# TEST FIXTURE — fake indicators only.
+# Columns: type<TAB>value<TAB>description<TAB>source
+file-path	~/.local/share/.fake-marker	fake dropped-file marker	https://example.test
+npm-package	fake-malicious-npm	fake npm payload	https://example.test
+pkgbuild-pattern	npm install fake-malicious-npm	fake PKGBUILD injection line	https://example.test
+systemd-unit	fake-evil.service	fake persistence unit	https://example.test
+process-name	fake-evil-proc	fake payload process name	https://example.test
+domain	evil.example.test	fake C2 domain	https://example.test
+hash	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855:~/.cache/.fake-hashed	sha256 of empty file at fake path	https://example.test

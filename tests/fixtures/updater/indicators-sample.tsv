@@ -1,0 +1,5 @@
+# fixture
+npm-package	atomic-lockfile	malicious npm pkg	src
+pkgbuild-pattern	src/hooks/deps	preinstall hook path	src
+domain	evil.example.test	c2	src
+file-path	/tmp/x	dropped file	src
